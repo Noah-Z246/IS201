@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LOTR Quiz - Noah Zwinggi IS 201 Final Project</title>
+<style>
+  body
+    {
+    font-family: Papyrus, fantasy, serif;
+    background-color: #3d8637;
+    color: #fdeb00;
+    text-align: center;
+    margin: 0;
+    padding: 1em;
+    }
+    .common {
+    position: absolute;
+    font-family: Papyrus, fantasy;
+    color: rgb(245, 229, 25);
+    }
+    .header {
+    top: 5px;
+    left: 1750px;
+    right: 10px;
+    height: 100px;
+    z-index: 2;
+    font-size: 60px;
+    }
+    /* make normal and visited links look the same (no purple) */
+a, a:visited {
+  color: rgb(245, 229, 25);
+  text-decoration: none; /* remove underline in normal state */
+}
+
+/* underline and bold only on hover/focus/active */
+a:hover, a:focus, a:active {
+  text-decoration: underline;
+  font-weight: bold;
+  color: rgb(245, 229, 25);
+}
+
+/* (optional) target links inside your header if you only want that one changed */
+.header a, .common a, .subheader a {
+  color: rgb(245, 229, 25);
+  text-decoration: none;
+}
+.header a:visited { color: rgb(245, 229, 25); text-decoration: none; }
+  h1, h2 {
+    margin-bottom: 0.5em;
+    font-family: Papyrus, fantasy;
+            font-size: 60px;
+            color: rgb(253, 235, 0);
+            text-align: center
+  }
+    p {font-family: Papyrus, fantasy;
+            font-size: 45px;
+            color: rgb(253, 235, 0);
+            text-align: center}
+
+  #quiz-container {
+    background-color: #24501a;
+    border-radius: 8px;
+    padding: 1.5em 2em;
+    max-width: 600px;
+    margin: 1em auto;
+    box-shadow: 0 0 15px #19350f;
+  }
+  #question {
+    font-size: 1.25rem;
+    margin-bottom: 1em;
+  }
+  form label.answer {
+    display: block;
+    background: #2e7031;
+    margin: 0.3em 0;
+    padding: 0.5em 1em;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 1rem;
+  }
+  form label.answer:hover {
+    background-color: #1b4414;
+  }
+  input[type="radio"] {
+    margin-right: 0.75em;
+    transform: scale(1.2);
+    vertical-align: middle;
+  }
+  #controls {
+    margin-top: 1em;
+  }
+  button {
+    background-color: #fdeb00;
+    color: #2e7031;
+    font-weight: bold;
+    font-size: 1rem;
+    border: none;
+    padding: 0.5em 1.2em;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 0 0.5em;
+    transition: background-color 0.3s ease;
+  }
+  button:disabled {
+    background-color: #999900;
+    cursor: not-allowed;
+  }
+  button:hover:not(:disabled) {
+    background-color: #d9c900;
+  }
+  #question-counter {
+    font-weight: bold;
+    margin-bottom: 1em;
+  }
+  #results {
+    margin-top: 1em;
+    text-align: left;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  #results h2 {
+    text-align: center;
+  }
+  .result-item {
+    background-color: #2e7031;
+    padding: 0.75em 1em;
+    margin-bottom: 0.75em;
+    border-radius: 6px;
+  }
+  .correct {
+    border-left: 6px solid #a8ff00;
+  }
+  .incorrect {
+    border-left: 6px solid #ff4747;
+  }
+  .correct-answer {
+    color: #a8ff00;
+    font-style: italic;
+    margin-top: 0.25em;
+    display: block;
+  }
+</style>
+</head>
+<body>
+            <div class="common header"> 
+        <span class="subheader">        
+           | <a href="scratch.html">Home</a> |
+        </span>
+        </div>
+  <h1>Lord of the Rings Quiz</h1>
+  <p>Test your knowledge of J.R.R. Tolkien's epic fantasy by answering 10 randomized questions!</p>
+
+  <div id="quiz-container">
+    <div id="question-counter"></div>
+    <div id="question"></div>
+    <form id="answer-form"></form>
+    <div id="controls">
+      <button id="next-btn" disabled>Next</button>
+      <button id="reset-btn" style="display:none;">Reset</button>
+    </div>
+  </div>
+
+  <div id="results"></div>
+
+<script>
+  const questionData = [
+    {
+      question: "Who is the author of The Lord of the Rings?",
+      options: [
+        { text: "J.R.R. Tolkien", correct: true },
+        { text: "C.S. Lewis", correct: false },
+        { text: "George R.R. Martin", correct: false },
+        { text: "J.K. Rowling", correct: false }
+      ]
+    },
+    {
+      question: "Who is well-known in The Shire for their fireworks?",
+      options: [
+        { text: "Gandalf", correct: true },
+        { text: "Merry Brandybuck", correct: false },
+        { text: "Pippin Took", correct: false },
+        { text: "Bilbo Baggins", correct: false }
+      ]
+    },
+    {
+      question: "Which creature is the main antagonist?",
+      options: [
+        { text: "Sauron", correct: true },
+        { text: "Saruman", correct: false },
+        { text: "Gollum", correct: false },
+        { text: "Shelob", correct: false }
+      ]
+    },
+    {
+      question: "What is the name of the land where the hobbits live?",
+      options: [
+        { text: "The Shire", correct: true },
+        { text: "Rohan", correct: false },
+        { text: "Mordor", correct: false },
+        { text: "Gondor", correct: false }
+      ]
+    },
+    {
+      question: "Which character becomes king at the end of the series?",
+      options: [
+        { text: "Aragorn", correct: true },
+        { text: "Boromir", correct: false },
+        { text: "Frodo", correct: false },
+        { text: "Denethor", correct: false }
+      ]
+    },
+    {
+      question: "What is the name of the sword that Bilbo and Frodo carry?",
+      options: [
+        { text: "Sting", correct: true },
+        { text: "Andúril", correct: false },
+        { text: "Glamdring", correct: false },
+        { text: "Orcrist", correct: false }
+      ]
+    },
+    {
+      question: "Who is the wizard that aids the Fellowship?",
+      options: [
+        { text: "Gandalf", correct: true },
+        { text: "Saruman", correct: false },
+        { text: "Radagast", correct: false },
+        { text: "Sauron", correct: false }
+      ]
+    },
+    {
+      question: "What is the name of the creature who once owned the One Ring?",
+      options: [
+        { text: "Gollum", correct: true },
+        { text: "Bilbo", correct: false },
+        { text: "Sauron", correct: false },
+        { text: "Frodo", correct: false }
+      ]
+    },
+    {
+      question: "Which race does Legolas belong to?",
+      options: [
+        { text: "Elf", correct: true },
+        { text: "Dwarf", correct: false },
+        { text: "Human", correct: false },
+        { text: "Hobbit", correct: false }
+      ]
+    },
+    {
+      question: "What is the name of the giant spider that Frodo and Sam encounter?",
+      options: [
+        { text: "Shelob", correct: true },
+        { text: "Aragog", correct: false },
+        { text: "Ungoliant", correct: false },
+        { text: "Spiderlings", correct: false }
+      ]
+    },
+    {
+      question: "Who destroys the One Ring?",
+      options: [
+        { text: "Gollum", correct: true },
+        { text: "Frodo", correct: false },
+        { text: "Samwise", correct: false },
+        { text: "Aragorn", correct: false }
+      ]
+    },
+    {
+      question: "Which city is known as the 'City of Kings'?",
+      options: [
+        { text: "Minas Tirith", correct: true },
+        { text: "Isengard", correct: false },
+        { text: "Edoras", correct: false },
+        { text: "Helm's Deep", correct: false }
+      ]
+    },
+    {
+      question: "What race is Gimli?",
+      options: [
+        { text: "Dwarf", correct: true },
+        { text: "Elf", correct: false },
+        { text: "Hobbit", correct: false },
+        { text: "Human", correct: false }
+      ]
+    },
+    {
+      question: "Which of the wizards turned out to be evil?",
+      options: [
+        { text: "Saruman", correct: true },
+        { text: "Galadriel", correct: false },
+        { text: "Radagast", correct: false },
+        { text: "Gandalf", correct: false }
+      ]
+    },
+    {
+      question: "Who says the line: 'One does not simply walk into Mordor'?",
+      options: [
+        { text: "Boromir", correct: true },
+        { text: "Aragorn", correct: false },
+        { text: "Gandalf", correct: false },
+        { text: "Legolas", correct: false }
+      ]
+    },
+    {
+      question: "Who is the steward of Gondor during the War of the Ring?",
+      options: [
+        { text: "Denethor", correct: true },
+        { text: "Boromir", correct: false },
+        { text: "Faramir", correct: false },
+        { text: "Aragorn", correct: false }
+      ]
+    },
+    {
+      question: "What is the name of Gandalf's horse?",
+      options: [
+        { text: "Shadowfax", correct: true },
+        { text: "Roheryn", correct: false },
+        { text: "Brego", correct: false },
+        { text: "Asfaloth", correct: false }
+      ]
+    },
+    {
+      question: "What is the name of the mountain where the One Ring was forged?",
+      options: [
+        { text: "Mount Doom", correct: true },
+        { text: "Mount Gundabad", correct: false },
+        { text: "Mount Caradhras", correct: false },
+        { text: "Mount Erebor", correct: false }
+      ]
+    },
+    {
+      question: "Which elf queen rules Lothlórien?",
+      options: [
+        { text: "Galadriel", correct: true },
+        { text: "Arwen", correct: false },
+        { text: "Tauriel", correct: false },
+        { text: "Celeborn", correct: false }
+      ]
+    },
+    {
+      question: "Who kills the Witch-king of Angmar?",
+      options: [
+        { text: "Éowyn and Merry", correct: true },
+        { text: "Aragorn and the ghost army", correct: false },
+        { text: "Gandalf and Pippin", correct: false },
+        { text: "Legolas and Gimli", correct: false }
+      ]
+    },
+    {
+      question: "What is the name of the Ent who leads the march on Isengard?",
+      options: [
+        { text: "Treebeard", correct: true },
+        { text: "Quickbeam", correct: false },
+        { text: "Fangorn", correct: false },
+        { text: "Leaflock", correct: false }
+      ]
+    },
+    {
+      question: "What is the name of the innkeeper at The Prancing Pony?",
+      options: [
+        { text: "Barliman Butterbur", correct: true },
+        { text: "Tom Bombadil", correct: false },
+        { text: "Lobelia Sackville-Baggins", correct: false },
+        { text: "Fredegar Bolger", correct: false }
+      ]
+    },
+    {
+      question: "What is the name of the inn where Frodo and company stay in Bree?",
+      options: [
+        { text: "The Prancing Pony", correct: true },
+        { text: "The Green Dragon", correct: false },
+        { text: "The Ivy Bush", correct: false },
+        { text: "The Golden Perch", correct: false }
+      ]
+    },
+    {
+      question: "Which character carries the Phial of Galadriel?",
+      options: [
+        { text: "Frodo", correct: true },
+        { text: "Samwise", correct: false },
+        { text: "Aragorn", correct: false },
+        { text: "Gandalf", correct: false }
+      ]
+    },
+    {
+      question: "What is the name of the sword wielded by Gandalf?",
+      options: [
+        { text: "Glamdring", correct: true },
+        { text: "Orcrist", correct: false },
+        { text: "Sting", correct: false },
+        { text: "Andúril", correct: false }
+      ]
+    },
+    {
+      question: "What is the name of Frodo's loyal gardener and friend?",
+      options: [
+        { text: "Samwise Gamgee", correct: true },
+        { text: "Merry Brandybuck", correct: false },
+        { text: "Pippin Took", correct: false },
+        { text: "Gandalf", correct: false }
+      ]
+    },
+    {
+      question: "What is the elvish word for friend that opens the Doors of Durin?",
+      options: [
+        { text: "Mellon", correct: true },
+        { text: "Namárië", correct: false },
+        { text: "Elen", correct: false },
+        { text: "Amin", correct: false }
+      ]
+    },
+    {
+      question: "Who reforges the shards of Narsil into Andúril?",
+      options: [
+        { text: "Elrond", correct: true },
+        { text: "Aragorn", correct: false },
+        { text: "Gandalf", correct: false },
+        { text: "Isildur", correct: false }
+      ]
+    },
+  ];
+
+  // Helper: Fisher-Yates shuffle
+  function shuffleArray(arr) {
+    for(let i = arr.length -1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  const totalQuestions = 10;
+  let selectedQuestions = [];
+  let currentIndex = 0;
+  let userAnswers = [];
+
+  // Elements
+  const questionCounterEl = document.getElementById('question-counter');
+  const questionEl = document.getElementById('question');
+  const answerForm = document.getElementById('answer-form');
+  const nextBtn = document.getElementById('next-btn');
+  const resetBtn = document.getElementById('reset-btn');
+  const resultsEl = document.getElementById('results');
+
+  function startQuiz() {
+    // Reset state
+    currentIndex = 0;
+    userAnswers = [];
+    resultsEl.innerHTML = '';
+    nextBtn.style.display = 'inline-block';
+    resetBtn.style.display = 'none';
+    nextBtn.disabled = true;
+
+    // Pick 10 random questions out of all 30
+    selectedQuestions = [...questionData];
+    shuffleArray(selectedQuestions);
+    selectedQuestions = selectedQuestions.slice(0, totalQuestions);
+
+    showQuestion();
+  }
+
+  function showQuestion() {
+    nextBtn.disabled = true;
+    const q = selectedQuestions[currentIndex];
+    questionCounterEl.textContent = `Question ${currentIndex + 1} of ${totalQuestions}`;
+    questionEl.textContent = q.question;
+    answerForm.innerHTML = '';
+
+    // Shuffle answers for this question
+    const options = [...q.options];
+    shuffleArray(options);
+
+    options.forEach((option, idx) => {
+      const label = document.createElement('label');
+      label.className = 'answer';
+      label.htmlFor = 'answer' + idx;
+
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'answer';
+      radio.id = 'answer' + idx;
+      radio.value = idx;
+      radio.required = true;
+      radio.addEventListener('change', () => {
+        nextBtn.disabled = false;
+      });
+
+      label.appendChild(radio);
+      label.appendChild(document.createTextNode(option.text));
+      answerForm.appendChild(label);
+    });
+
+    // Save the shuffled options for answer checking later
+    selectedQuestions[currentIndex].shuffledOptions = options;
+  }
+
+  nextBtn.addEventListener('click', () => {
+    const selectedRadio = document.querySelector('input[name="answer"]:checked');
+    if (!selectedRadio) return;
+
+    userAnswers[currentIndex] = Number(selectedRadio.value);
+    currentIndex++;
+    if (currentIndex < totalQuestions) {
+      showQuestion();
+    } else {
+      showResults();
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    startQuiz();
+  });
+
+  function showResults() {
+    questionCounterEl.textContent = '';
+    questionEl.textContent = 'Quiz Results';
+    answerForm.innerHTML = '';
+    nextBtn.style.display = 'none';
+    resetBtn.style.display = 'inline-block';
+
+    let resultsHTML = '<h2>Results Summary</h2>';
+    selectedQuestions.forEach((q, i) => {
+      const userAnswerIndex = userAnswers[i];
+      const shuffled = q.shuffledOptions;
+      const userAnswerText = userAnswerIndex !== undefined ? shuffled[userAnswerIndex].text : '<em>No answer</em>';
+      const correctOption = shuffled.find(opt => opt.correct);
+      const correctAnswerText = correctOption.text;
+      const isCorrect = userAnswerIndex !== undefined && shuffled[userAnswerIndex].correct;
+
+      resultsHTML += `<div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">`;
+      resultsHTML += `<strong>Q${i + 1}:</strong> ${q.question}<br>`;
+      resultsHTML += `Your answer: ${userAnswerText}<br>`;
+      if (!isCorrect) {
+        resultsHTML += `<span class="correct-answer">Correct answer: ${correctAnswerText}</span>`;
+      }
+      resultsHTML += '</div>';
+    });
+    resultsEl.innerHTML = resultsHTML;
+  }
+
+  startQuiz();
+</script>
+</body>
+</html>

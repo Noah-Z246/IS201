@@ -1,0 +1,74 @@
+
+body {
+            font-family: Papyrus, fantasy;
+            font-size: 60px;
+            color: rgb(253, 235, 0);
+            background-color: rgb(61, 134, 55);
+            text-align: center
+        }
+
+a {
+            font-family: Papyrus, fantasy;
+            color: rgb(245, 229, 25);
+            text-decoration: none;
+        }  
+a:hover {
+            text-decoration: underline;
+            font-weight: bold;
+            color: rgb(245, 229, 25)
+}
+
+.masthead h1 {
+    font-size: 75px;
+    font-family: Papyrus, fantasy;
+}
+.common {
+    position: absolute;
+    font-family: Papyrus, fantasy;
+    color: rgb(245, 229, 25);
+}
+.header {
+    top: 5px;
+    left: 1600px;
+    right: 10px;
+    height: 100px;
+    z-index: 2;
+}
+#list {
+    font-size: 30px
+}
+.main-content {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+.main-content ol,
+.main-content ul {
+    list-style-position: inside;
+    font-size: 30px
+}
+h2 {
+    font-family: Papyrus, fantasy;
+            font-size: 60px;
+            color: rgb(253, 235, 0);
+            text-align: center
+
+}
+p {font-family: Papyrus, fantasy;
+            font-size: 45px;
+            color: rgb(253, 235, 0);
+            text-align: center}
+.bold {
+    font-weight: bold;
+    font-size: 50px
+}
+
+#quiz-container {
+    background-color: #264d16;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 90%;
+    margin: 20px auto;
+    text-align: left;
+}
